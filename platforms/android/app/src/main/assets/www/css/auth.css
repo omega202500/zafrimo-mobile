@@ -1,0 +1,414 @@
+/* Styles spécifiques aux pages d'authentification */
+
+/* Hero image avec dégradé vert et arrondis */
+.welcome .hero {
+  background-image: linear-gradient(180deg, rgba(76, 175, 80, 0.3), rgba(26, 35, 19, 0.8)),
+    url('../assets/img/welcome-hero.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Logo */
+.welcome .logo {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.welcome .logo img {
+  height: 40px;
+}
+
+.welcome .logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--lime);
+}
+
+/* Points de pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.pagination .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--glass-line);
+  transition: background 0.3s ease;
+}
+
+.pagination .dot.active {
+  background: var(--lime);
+  width: 24px;
+  border-radius: var(--r-pill);
+}
+
+/* Cartes de sélection de profil */
+.profile-cards {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.profile-card {
+  flex: 1;
+  padding: 20px 16px;
+  border-radius: var(--r-card);
+  background: var(--glass);
+  border: 2px solid var(--glass-line);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.profile-card.selected {
+  border-color: var(--lime);
+  background: rgba(196, 255, 46, 0.1);
+}
+
+.profile-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.profile-card p {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+/* Champ de mot de passe avec bouton œil */
+.password-field {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.password-field .field {
+  padding-right: 54px;
+  margin-bottom: 0;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text-2);
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--text);
+}
+
+/* Messages d'erreur de champ */
+.field-error {
+  color: var(--error);
+  font-size: 12px;
+  margin: -8px 0 12px 12px;
+}
+
+.field.field-error {
+  border-color: var(--error);
+}
+
+/* Indicateur de robustesse du mot de passe */
+.password-strength {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.password-strength .bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--glass-line);
+  transition: background 0.3s ease;
+}
+
+.password-strength .bar.weak {
+  background: var(--error);
+}
+
+.password-strength .bar.medium {
+  background: var(--warning);
+}
+
+.password-strength .bar.strong {
+  background: var(--lime);
+}
+
+/* Checkbox */
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.checkbox input {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox input:checked {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.checkbox a {
+  color: var(--lime);
+  text-decoration: underline;
+}
+
+/* État de chargement du bouton */
+.btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn.loading::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--lime-ink);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation d'entrée pour la page d'accueil */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome>*:not(.hero) {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.welcome>*:not(.hero):nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.welcome>*:not(.hero):nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.welcome>*:not(.hero):nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.welcome>*:not(.hero):nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* Masquer la barre de navigation sur WelcomePage */
+.welcome #nav {
+  display: none;
+}
+
+/* Fix pour le logo */
+.welcome .logo img {
+  height: 40px;
+  display: block;
+}
+
+/* Sélecteur de langue */
+.lang-selector {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-btn.active {
+  background: var(--lime);
+  color: var(--lime-ink);
+  border-color: var(--lime);
+}
+
+.lang-btn:hover {
+  color: var(--text);
+}
+
+/* Hero image pour les pages d'authentification */
+.auth-page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.auth-page .hero {
+  height: 200px;
+  border-radius: 0 0 36px 36px;
+  margin-bottom: 20px;
+  background: linear-gradient(180deg, rgba(76, 175, 80, 0.2), rgba(26, 35, 19, 0.8)),
+    url('../assets/img/welcome-hero.jpg') center/cover;
+  flex-shrink: 0;
+}
+
+.auth-page .content {
+  flex: 1;
+  padding: 0 20px 20px;
+}
+
+/* Champ OTP */
+.otp-inputs {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.otp-inputs input {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  border-radius: 12px;
+  background: var(--glass);
+  border: 2px solid var(--glass-line);
+  color: var(--text);
+}
+
+.otp-inputs input:focus {
+  border-color: var(--lime);
+  outline: none;
+}
+
+/* Timer de reenvoi */
+.resend-timer {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.resend-timer a {
+  color: var(--lime);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.resend-timer a:disabled {
+  color: var(--text-2);
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+/* ===== Images d'en-tête : même forme sur toutes les pages d'authentification ===== */
+
+/* ACCUEIL : photo pleine largeur qui s'estompe vers le fond, comme la maquette */
+body .welcome {
+  position: relative;
+  /* annule l'espace intérieur de #view pour que la photo touche les bords */
+  margin: calc(-1 * (var(--safe-top) + 16px)) -16px -110px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0 24px calc(var(--safe-bottom) + 28px);
+  justify-content: flex-end;
+}
+
+body .welcome .hero {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 68%;
+  min-height: 0;
+  margin: 0;
+  flex: none;
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(20, 28, 11, 0.25), rgba(20, 28, 11, 0)),
+    url('../assets/img/welcome-hero.jpg') center 35% / cover no-repeat;
+  /* le bas de la photo disparaît doucement dans le fond vert */
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+}
+
+/* le texte et les boutons passent devant la photo */
+body .welcome>*:not(.hero) {
+  position: relative;
+  z-index: 1;
+}
+
+/* CONNEXION, INSCRIPTION, MOT DE PASSE OUBLIÉ... : bandeau pleine largeur */
+body .auth-page {
+  margin: calc(-1 * (var(--safe-top) + 16px)) -16px -110px;
+  padding-top: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body .auth-page .hero {
+  height: calc(190px + var(--safe-top));
+  margin: 0 0 16px;
+  flex-shrink: 0;
+  border-radius: 0 0 32px 32px;
+  /* arrondi symétrique en bas, bord droit en haut contre l'écran */
+  background:
+    linear-gradient(180deg, rgba(20, 28, 11, 0.25), rgba(20, 28, 11, 0.55)),
+    url('../assets/img/welcome-hero.jpg') center 40% / cover no-repeat;
+}
+
+body .auth-page .content {
+  padding: 0 20px calc(var(--safe-bottom) + 40px);
+}

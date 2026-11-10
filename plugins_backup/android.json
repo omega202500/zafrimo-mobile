@@ -1,0 +1,39 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-statusbar": {
+      "PACKAGE_NAME": "it.zafrimo.app"
+    },
+    "cordova-plugin-camera": {
+      "ANDROIDX_CORE_VERSION": "1.6.+",
+      "PACKAGE_NAME": "it.zafrimo.app"
+    }
+  },
+  "dependent_plugins": {
+    "cordova-plugin-firebasex-core": {
+      "ANDROID_FIREBASE_CORE_VERSION": "21.1.1",
+      "ANDROID_FIREBASE_INSTALLATIONS_VERSION": "19.1.0",
+      "ANDROID_GSON_VERSION": "2.14.0",
+      "PACKAGE_NAME": "it.zafrimo.app"
+    },
+    "cordova-plugin-firebasex-analytics": {
+      "FIREBASE_ANALYTICS_COLLECTION_ENABLED": "true",
+      "FIREBASE_ANALYTICS_WITHOUT_ADS": "false",
+      "GOOGLE_ANALYTICS_ADID_COLLECTION_ENABLED": "true",
+      "GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE": "true",
+      "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE": "true",
+      "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA": "true",
+      "GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS": "true",
+      "IOS_ON_DEVICE_CONVERSION_ANALYTICS": "false",
+      "ANDROID_FIREBASE_ANALYTICS_VERSION": "23.0.0",
+      "ANDROID_PLAY_SERVICES_TAGMANAGER_VERSION": "18.3.0",
+      "PACKAGE_NAME": "it.zafrimo.app"
+    }
+  }
+}

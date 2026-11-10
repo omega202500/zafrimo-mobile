@@ -1,0 +1,9 @@
+export { default as ChangePasswordPage } from './ChangePasswordPage.js';
+export { default as ForgotPasswordPage } from './ForgotPasswordPage.js';
+export { default as LoginPage } from './LoginPage.js';
+export { default as OtpPage } from './OtpPage.js';
+export { default as PrivacyPage } from './PrivacyPage.js';
+export { default as RegisterPage } from './RegisterPage.js';
+export { default as ResetPasswordPage } from './ResetPasswordPage.js';
+export { default as TermsPage } from './TermsPage.js';
+export { default as WelcomePage } from './WelcomePage.js';

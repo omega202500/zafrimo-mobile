@@ -1,0 +1,12 @@
+export { default as DeleteAccountPage } from './DeleteAccountPage.js';
+export { default as EditProfilePage } from './EditProfilePage.js';
+export { default as LanguagePage } from './LanguagePage.js';
+export { default as MyEarningsPage } from './MyEarningsPage.js';
+export { default as MyListingsPage } from './MyListingsPage.js';
+export { default as MyPaymentsPage } from './MyPaymentsPage.js';
+export { default as MyRatePage } from './MyRatePage.js';
+export { default as MyStarsPage } from './MyStarsPage.js';
+export { default as NotificationSettingsPage } from './NotificationSettingsPage.js';
+export { default as OwnerProfilePage } from './OwnerProfilePage.js';
+export { default as ProfilePage } from './ProfilePage.js';
+export { default as SettingsPage } from './SettingsPage.js';

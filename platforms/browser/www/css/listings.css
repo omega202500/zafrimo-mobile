@@ -1,0 +1,214 @@
+/* Filter panel - bottom sheet */
+.filter-panel-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.filter-panel {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.filter-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filter-panel-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.filter-panel-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.filter-panel-footer .btn {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Photo gallery with scroll-snap */
+.photo-gallery {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--r);
+    margin-bottom: 12px;
+}
+
+.photo-gallery-item {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    height: 240px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.photo-gallery-counter {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Photo thumbnails */
+.photo-thumbnails {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.photo-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+}
+
+.photo-thumbnail.cover {
+    border-color: var(--lime);
+}
+
+.photo-thumbnail-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* My listings row */
+.my-listings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.my-listings-row h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* Field labels */
+.field-label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+/* Period block visibility */
+.period-block {
+    display: none;
+}
+
+.period-block.visible {
+    display: block;
+}
+
+/* Filter badge on button */
+.filter-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--lime);
+    color: var(--bg);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+}
+
+/* Owner card clickable */
+.owner-card {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.owner-card:active {
+    transform: scale(0.98);
+}
+
+/* Confirm delete zone */
+.confirm-zone {
+    padding: 12px;
+    background: var(--glass);
+    border-radius: var(--r);
+    margin-top: 12px;
+}
+
+.confirm-zone p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+}
+
+.confirm-zone .btn {
+    margin-bottom: 0;
+}

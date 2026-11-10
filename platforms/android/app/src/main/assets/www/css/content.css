@@ -1,0 +1,47 @@
+/* ===== Module contenus ===== */
+
+/* ----- FAQ (accordéon) ----- */
+.faq-group-title {
+    margin: 22px 4px 10px;
+    font-size: 13px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.faq-item { padding: 0; margin-bottom: 10px; overflow: hidden; }
+.faq-item summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; color: var(--lime); font-size: 22px; line-height: 1; flex: none; }
+.faq-item[open] summary::after { content: '−'; }
+.faq-answer { padding: 0 16px 16px; line-height: 1.6; font-size: 14px; }
+
+/* ----- Lignes d'information (notes légales, assistance) ----- */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-top: 1px solid var(--glass-line);
+    font-size: 14px;
+}
+.info-row:first-of-type { border-top: 0; }
+.info-row span:last-child { text-align: right; overflow-wrap: anywhere; }
+
+/* ----- À propos ----- */
+.about-hero { text-align: center; padding: 28px 16px; }
+.about-logo { width: 72px; height: 72px; margin: 0 auto 12px; display: block; }
+.about-hero p { line-height: 1.6; margin-top: 8px; }
+
+/* ----- Assistance ----- */
+.support-hero { text-align: center; padding: 24px; }
+.support-hero p { line-height: 1.6; margin-top: 8px; }
+.support-btn { display: block; text-align: center; text-decoration: none; }

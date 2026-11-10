@@ -1,0 +1,112 @@
+/* ===== Module consulting ===== */
+
+/* ----- Fiche consultant ----- */
+.consult-hero { text-align: center; padding: 22px 16px; }
+.consult-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--lime);
+    margin: 0 auto 12px;
+    display: block;
+}
+.consult-hero h2 { margin-bottom: 4px; }
+.consult-price { font-size: 28px; margin-top: 12px; }
+.consult-price-note { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+.consult-steps { padding: 0; list-style: none; margin: 0; counter-reset: step; }
+.consult-steps li {
+    position: relative;
+    padding-left: 38px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+    counter-increment: step;
+}
+.consult-steps li:last-child { margin-bottom: 0; }
+.consult-steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--lime);
+    color: var(--lime-ink);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* ----- Paiement ----- */
+.pay-methods { display: flex; flex-direction: column; gap: 8px; }
+.pay-method {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    cursor: pointer;
+}
+.pay-method input { accent-color: var(--lime); width: 18px; height: 18px; flex: none; }
+.pay-secure { margin-top: 12px; font-size: 13px; }
+
+.pay-accept { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.5; margin-bottom: 14px; }
+.pay-accept input { accent-color: var(--lime); width: 20px; height: 20px; flex: none; margin-top: 2px; }
+.pay-link { color: var(--lime); text-decoration: underline; background: none; padding: 0; font-size: inherit; }
+.pay-error { color: var(--error); font-size: 14px; margin-bottom: 12px; }
+.btn:disabled { opacity: .5; }
+
+/* ----- Résultat du paiement ----- */
+.pay-state {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+    padding: 20px;
+}
+.pay-state .btn { max-width: 320px; margin-bottom: 0; }
+.pay-state .glass { width: 100%; text-align: left; }
+.pay-icon { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; }
+.pay-icon.ok { background: var(--lime); color: var(--lime-ink); }
+.pay-icon.ko { background: rgba(255, 107, 107, .15); color: var(--error); }
+.pay-icon.neutral { background: var(--glass); color: var(--text-2); }
+.pay-spinner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 4px solid var(--glass-line);
+    border-top-color: var(--lime);
+    animation: pay-spin 1s linear infinite;
+}
+@keyframes pay-spin { to { transform: rotate(360deg); } }
+
+/* ----- Liste des paiements ----- */
+.payment-row { display: flex; align-items: center; gap: 12px; padding: 14px; margin-bottom: 12px; cursor: pointer; }
+.payment-row-main { flex: 1; min-width: 0; }
+.payment-row-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.payment-row-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.payment-row-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+
+/* Statuts de paiement (la base .status-pill vient de moderation.css) */
+.status-pill.paid { background: var(--lime); color: var(--lime-ink); border-color: transparent; }
+.status-pill.failed { color: var(--error); border-color: var(--error); }
+.status-pill.cancelled,
+.status-pill.refunded { color: var(--text-2); }
+
+/* ----- Gains du consultant ----- */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.stat { padding: 14px; margin-bottom: 0; }
+.stat-label { font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+.stat-value { font-size: 20px; font-weight: 700; }
+.stat.accent .stat-value { color: var(--lime); }
+.stat-wide { grid-column: 1 / -1; }
+.earn-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--glass-line); }
+.earn-row:first-of-type { border-top: 0; }

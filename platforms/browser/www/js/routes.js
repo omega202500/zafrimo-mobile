@@ -1,0 +1,23 @@
+import * as auth from './modules/auth/index.js';
+import * as consulting from './modules/consulting/index.js';
+import * as listings from './modules/listings/index.js';
+import * as messages from './modules/messages/index.js';
+import * as news from './modules/news/index.js';
+import * as notifications from './modules/notifications/index.js';
+import * as profile from './modules/profile/index.js';
+import * as moderation from './modules/moderation/index.js';
+import * as system from './modules/system/index.js';
+import * as content from './modules/content/index.js';
+
+const routes = {};
+Object.values(auth).forEach(P => routes[P.route] = P);
+Object.values(consulting).forEach(P => routes[P.route] = P);
+Object.values(listings).forEach(P => routes[P.route] = P);
+Object.values(messages).forEach(P => routes[P.route] = P);
+Object.values(news).forEach(P => routes[P.route] = P);
+Object.values(notifications).forEach(P => routes[P.route] = P);
+Object.values(profile).forEach(P => routes[P.route] = P);
+Object.values(moderation).forEach(P => routes[P.route] = P);
+Object.values(system).forEach(P => routes[P.route] = P);
+Object.values(content).forEach(P => routes[P.route] = P);
+export default routes;

@@ -1,0 +1,17 @@
+:root{
+  --bg-1:#141c0b; --bg-2:#2b3818; --bg-3:#3a4a1e;
+  --lime:#c4ff2e; --lime-ink:#10170a;
+  --text:#fff; --text-2:#b9c4a5;
+  --error:#ff6b6b; --warning:#ffd93d;
+  --glass:rgba(255,255,255,.09); --glass-line:rgba(255,255,255,.16);
+  --r-card:24px; --r-pill:999px; --blur:blur(20px);
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+  
+/* Android : le WebView annonce parfois une marge basse plus grande que nécessaire
+   (la barre système est déjà exclue de l'écran). On la plafonne pour que la barre d'onglets
+   et le champ de saisie du chat descendent jusqu'au bord. */
+body.platform-android {
+    --safe-bottom: min(env(safe-area-inset-bottom, 0px), 12px);
+}
+}
