@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="it.zafrimo.app" version="0.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+  <name>ZAFrimo</name><description>Immobiliare e consulenza in Italia</description>
+  <author>Joel Omega</author>
+  <platform name="android">
+    <!-- DÉVELOPPEMENT : autorise http:// (backend local 10.0.2.2). À RETIRER pour la production (Render est en https). -->
+    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+      <application android:usesCleartextTraffic="true" />
+    </edit-config>
+    <config-file target="AndroidManifest.xml" parent="/manifest">
+      <uses-permission android:name="android.permission.RECORD_AUDIO" />
+      <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    </config-file>
+  </platform>
+  <content src="index.html" />
+  <allow-intent href="mailto:*" />
+  <!-- TODO : remplacer origin="*" par l'origine réelle de l'API avant la publication. -->
+  <access origin="*" />
+  <allow-navigation href="https://*/*" />
+  <preference name="Orientation" value="portrait"/>
+  <preference name="StatusBarOverlaysWebView" value="false" />
+  <preference name="StatusBarBackgroundColor" value="#141c0b" />
+  <preference name="StatusBarStyle" value="lightcontent" />
+</widget>
