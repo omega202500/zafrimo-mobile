@@ -1,0 +1,83 @@
+/* ===== Module système ===== */
+
+/* ----- Écrans d'état (page introuvable, erreur, hors ligne) ----- */
+.system-state {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+    padding: 20px;
+}
+.system-state h1 { font-size: 24px; }
+.system-state p { max-width: 320px; line-height: 1.6; }
+.system-state .btn { max-width: 320px; margin-bottom: 0; }
+.system-icon { font-size: 56px; }
+
+/* ----- Squelette de chargement ----- */
+.skeleton-page { padding-top: calc(var(--safe-top) + 12px); }
+.skeleton {
+    border-radius: 18px;
+    background: linear-gradient(90deg, var(--glass) 25%, rgba(255, 255, 255, .12) 50%, var(--glass) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s infinite;
+}
+.skeleton-title { height: 28px; width: 55%; margin-bottom: 18px; }
+.skeleton-card { height: 110px; margin-bottom: 14px; }
+@keyframes skeleton-shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+}
+
+/* ----- Toast (petit message en bas de l'écran) ----- */
+.toast {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: calc(var(--safe-bottom) + 96px);
+    z-index: 1300;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: rgba(30, 40, 16, .97);
+    border: 1px solid var(--glass-line);
+    font-size: 14px;
+    animation: toast-in .2s ease-out;
+}
+.toast-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex: none;
+    background: var(--glass);
+}
+.toast-success .toast-icon { background: var(--lime); color: var(--lime-ink); }
+.toast-error { border-color: var(--error); }
+.toast-error .toast-icon { background: var(--error); color: #fff; }
+@keyframes toast-in {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+}
+
+/* ----- Barre "hors ligne" ----- */
+.offline-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1200;
+    padding: calc(var(--safe-top) + 6px) 12px 6px;
+    background: var(--error);
+    color: #fff;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+}

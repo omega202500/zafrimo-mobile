@@ -1,0 +1,66 @@
+/* ===== Module profil ===== */
+[hidden] { display: none !important; }
+
+/* ----- Profil ----- */
+.profile-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--lime);
+    margin: 0 auto 14px;
+    display: block;
+    background: var(--glass);
+}
+.profile-actions { display: flex; justify-content: center; margin-top: 14px; }
+.profile-actions .btn { width: auto; margin: 0; padding: 12px 24px; font-size: 14px; }
+
+.availability-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.availability-row .toggle { flex: none; }
+
+/* ----- Modifier le profil ----- */
+.edit-avatar-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
+.edit-avatar {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--lime);
+    background: var(--glass);
+}
+.edit-photo-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+
+.form-label { display: block; margin: 0 0 8px 4px; color: var(--text-2); font-size: 14px; }
+.form-error { color: var(--error); font-size: 13px; margin: -6px 0 12px 12px; }
+.form-error:empty { display: none; }
+.hours-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.hours-row .field { flex: 1; min-width: 0; margin-bottom: 0; }
+
+/* ----- Réglages de notifications ----- */
+.notif-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--glass-line);
+}
+.notif-row:first-child { border-top: 0; }
+.notif-row p { font-size: 13px; margin-top: 2px; }
+.notif-row .toggle { flex: none; }
+.notif-list.is-disabled { opacity: .45; pointer-events: none; }
+
+/* ----- Langue ----- */
+.lang-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.lang-row.on { border-color: var(--lime); color: var(--lime); }

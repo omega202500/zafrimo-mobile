@@ -1,0 +1,12 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "ZAFrimo",
+  "short_name": "ZAFrimo",
+  "version": "it.zafrimo.app",
+  "description": "Immobiliare e consulenza in Italia",
+  "icons": [],
+  "orientation": "portrait",
+  "start_url": "index.html",
+  "theme_color": "#141c0b"
+}

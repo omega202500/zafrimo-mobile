@@ -1,0 +1,413 @@
+.glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    border-radius: var(--r-card);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur)
+}
+
+.low-end .glass {
+    backdrop-filter: none;
+    background: rgba(40, 52, 22, .85)
+}
+
+.card {
+    padding: 14px;
+    margin-bottom: 14px
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--r-pill);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 12px
+}
+
+.btn-lime {
+    background: var(--lime);
+    color: var(--lime-ink)
+}
+
+.btn-glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-line)
+}
+
+.field {
+    display: block;
+    width: 100%;
+    padding: 15px 18px;
+    margin-bottom: 12px;
+    border-radius: var(--r-pill);
+    background: var(--glass);
+    border: 1px solid var(--glass-line)
+}
+
+.field::placeholder {
+    color: var(--text-2)
+}
+
+.price {
+    color: var(--lime);
+    font-weight: 700
+}
+
+.chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin: 14px 0;
+    scrollbar-width: none
+}
+
+.chip {
+    padding: 10px 16px;
+    border-radius: var(--r-pill);
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    white-space: nowrap;
+    font-size: 14px
+}
+
+.chip.on {
+    background: #fff;
+    color: #111
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px
+}
+
+.round {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--glass);
+    border: 1px solid var(--glass-line)
+}
+
+.photo {
+    height: 190px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #5b7a2e, #1d2a10) center/cover;
+    position: relative;
+    margin-bottom: 10px
+}
+
+.badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 6px 12px;
+    border-radius: var(--r-pill);
+    background: rgba(0, 0, 0, .45);
+    font-size: 12px
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px
+}
+
+.tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px
+}
+
+.tags span {
+    padding: 6px 10px;
+    border-radius: var(--r-pill);
+    background: var(--glass);
+    font-size: 12px
+}
+
+.stars {
+    color: var(--lime);
+    letter-spacing: 2px
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, .05)
+}
+
+.menu-item span:first-child {
+    font-size: 20px;
+    width: 32px;
+    text-align: center
+}
+
+.menu-item span:nth-child(2) {
+    flex: 1;
+    font-size: 15px
+}
+
+.menu-item span:last-child {
+    font-size: 24px;
+    color: var(--text-2)
+}
+
+.toggle {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    border-radius: 14px;
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    cursor: pointer
+}
+
+.toggle input {
+    display: none
+}
+
+.toggle span {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--text-2);
+    transition: transform 0.2s ease
+}
+
+.toggle input:checked+span {
+    transform: translateX(20px);
+    background: var(--lime)
+}
+
+.welcome {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-align: center;
+    gap: 12px;
+    padding-bottom: 20px;
+    padding-top: env(safe-area-inset-top, 0px)
+}
+
+.welcome .hero {
+    flex: 1;
+    min-height: 280px;
+    border-radius: 0 0 36px 36px;
+    margin-bottom: 20px;
+    background: linear-gradient(180deg, rgba(76, 175, 80, 0.2), rgba(26, 35, 19, 0.8)), url('../assets/img/welcome-hero.jpg') center/cover
+}
+
+.btn-danger {
+    background: rgba(255, 107, 107, .15);
+    color: var(--error);
+    border: 1px solid var(--error)
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .65);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    display: grid;
+    place-items: center;
+    z-index: 1000;
+    padding: 20px
+}
+
+.modal-content {
+    max-width: 380px;
+    width: 100%;
+    text-align: center
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px
+}
+
+/* ===== Barre d'onglets du bas : collée au bord de l'écran, pleine largeur ===== */
+#nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50
+}
+
+#nav:empty {
+    display: none
+}
+
+#nav .bottom-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 6px 4px calc(var(--safe-bottom) + 6px);
+    border-radius: 0;
+    border: 0;
+    border-top: 1px solid var(--glass-line);
+    background: rgba(20, 28, 11, .94);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur)
+}
+
+.low-end #nav .bottom-nav {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgb(20, 28, 11)
+}
+
+.bottom-nav button {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 2px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: color .2s ease
+}
+
+.bottom-nav button:active {
+    background: var(--glass)
+}
+
+.bottom-nav button svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none
+}
+
+.bottom-nav .nav-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.1
+}
+
+/* Onglet actif : couleur lime et petit trait en haut de l'onglet */
+.bottom-nav button.on {
+    color: var(--lime)
+}
+
+.bottom-nav button.on svg {
+    stroke: var(--lime)
+}
+
+.bottom-nav button.on::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 28px;
+    height: 3px;
+    margin-left: -14px;
+    border-radius: 0 0 3px 3px;
+    background: var(--lime)
+}
+
+/* Pastille de messages non lus : à côté de l'icône */
+.bottom-nav .nav-badge {
+    top: 0;
+    right: auto;
+    left: calc(50% + 6px)
+}
+
+/* ===== État verrouillé (étoiles insuffisantes) ===== */
+.locked-state {
+    text-align: center;
+    padding: 6px 4px calc(var(--safe-bottom) + 2px);
+}
+
+.locked-state .lock-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.progress {
+    height: 8px;
+    border-radius: var(--r-pill);
+    background: var(--glass);
+    overflow: hidden;
+    margin: 16px 0 8px;
+}
+
+.progress>span {
+    display: block;
+    height: 100%;
+    background: var(--lime);
+    border-radius: inherit;
+}
+
+/* ===== Formulaires de publication ===== */
+.field.textarea {
+    border-radius: 24px;
+    resize: vertical;
+    min-height: 140px;
+    font-family: inherit;
+}
+
+select.field option {
+    color: #111;
+}
+
+.photo-preview {
+    height: 180px;
+    border-radius: 20px;
+    background: var(--glass) center / cover no-repeat;
+    display: grid;
+    place-items: center;
+    margin-bottom: 12px;
+    font-size: 32px;
+}
+
+.photo-preview.has-photo span {
+    display: none;
+}
+
+/* Aperçu de la photo : vraie balise <img> par-dessus le cadre */
+.photo-preview {
+    position: relative;
+    overflow: hidden;
+}
+
+.photo-preview img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
