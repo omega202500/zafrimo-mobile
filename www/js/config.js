@@ -3,10 +3,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 // 1) Production : l'URL de ton backend sur Render (toujours en https), terminée par /api
-const PROD_API_URL = 'https://REMPLACE-MOI.onrender.com/api';
+const PROD_API_URL = 'https://zafrimo-api.onrender.com';
 
 // 2) Mets true pour construire l'APK de production
-const USE_PROD = false;
+const USE_PROD = true;
 
 // 3) Développement (backend lancé sur ton PC avec `php artisan serve`)
 const DEV_PORT = 8000;

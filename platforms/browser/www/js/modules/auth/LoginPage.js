@@ -5,6 +5,7 @@ import FormField from '../../components/FormField.js';
 import PasswordField from '../../components/PasswordField.js';
 import Storage from '../../services/StorageService.js';
 import { setFieldError } from '../../core/FormUtils.js';
+import { authErrorMessage } from './authError.js';
 
 export default class LoginPage extends Page {
   static route = '/login';
@@ -95,7 +96,7 @@ export default class LoginPage extends Page {
         await Auth.login(email.value.trim(), password.value);
         this.app.router.go('/listings');
       } catch (e) {
-        setFieldError(root, 'password', e.message);
+        setFieldError(root, 'password', authErrorMessage(e, key => this.t(key)));
         submit.classList.remove('loading');
         submit.disabled = false;
       }
@@ -113,7 +114,7 @@ export default class LoginPage extends Page {
           Storage.set('otpEmail', email.value.trim());
           this.app.router.go('/otp');
         } catch (e) {
-          setFieldError(root, 'email', e.message);
+          setFieldError(root, 'email', authErrorMessage(e, key => this.t(key)));
         }
       };
     }

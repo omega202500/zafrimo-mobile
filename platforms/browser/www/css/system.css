@@ -81,3 +81,25 @@
     font-size: 13px;
     font-weight: 600;
 }
+
+
+/* ===== Glissement entre les rubriques ===== */
+#view.slide-from-right { animation: slide-from-right .22s ease-out; }
+#view.slide-from-left { animation: slide-from-left .22s ease-out; }
+
+@keyframes slide-from-right {
+    from { transform: translateX(36px); opacity: .3; }
+    to { transform: none; opacity: 1; }
+}
+@keyframes slide-from-left {
+    from { transform: translateX(-36px); opacity: .3; }
+    to { transform: none; opacity: 1; }
+}
+
+/* Pas d'animation sur les téléphones d'entrée de gamme (cahier section 15) ni si l'utilisateur la refuse */
+body.low-end #view.slide-from-right,
+body.low-end #view.slide-from-left { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+    #view.slide-from-right,
+    #view.slide-from-left { animation: none; }
+}

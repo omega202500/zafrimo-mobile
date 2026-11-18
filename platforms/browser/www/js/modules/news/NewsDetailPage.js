@@ -4,6 +4,7 @@ import NewsService from '../../services/NewsService.js';
 import StarRating from '../../components/StarRating.js';
 import { escapeHtml } from '../../core/Html.js';
 import ReportModal from '../../components/ReportModal.js';
+import PhotoViewer from '../../components/PhotoViewer.js';
 
 export default class NewsDetailPage extends Page {
   static route = '/news/:id';
@@ -40,7 +41,8 @@ export default class NewsDetailPage extends Page {
         ${this.header(this.t('news.detailTitle'), { back: true })}
 
         ${a.photo ? `
-        <div class="photo glass" style="height: 220px; background-image: url('${a.photo}'); margin-bottom: 14px;">
+        <div class="photo glass news-photo" data-viewer-photo style="height: 220px; margin-bottom: 14px;">
+          <img src="${escapeHtml(a.photo)}" alt="">
           <span class="badge" style="color: var(--lime); font-weight: 600;">${escapeHtml(a.category)}</span>
         </div>` : ''}
 
@@ -97,6 +99,11 @@ export default class NewsDetailPage extends Page {
         }
         ReportModal.open({ type: 'news', targetId: this.article.id });
       };
+    }
+
+    const photo = this.el.querySelector('[data-viewer-photo]');
+    if (photo) {
+      photo.onclick = () => PhotoViewer.open([this.article.photo], 0);
     }
     const zone = this.el.querySelector('#deleteZone');
     if (!zone) return;

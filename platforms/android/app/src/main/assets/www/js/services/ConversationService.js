@@ -1,4 +1,4 @@
-import mockMessages from '../mocks/messages.js';
+﻿import mockMessages from '../mocks/messages.js';
 import Storage from './StorageService.js';
 import Moderation from './ModerationService.js';
 import Notifications from './NotificationService.js';
@@ -8,14 +8,14 @@ const SEEDED_KEY = 'conversations_seeded';
 const LOCALES = { it: 'it-IT', fr: 'fr-FR', en: 'en-GB' };
 const KEY = 'conversations_custom';
 
-// TODO API : chaque méthode correspondra à une route Laravel (GET/POST/PUT/DELETE /conversations)
+// TODO API : chaque mÃ©thode correspondra Ã  une route Laravel (GET/POST/PUT/DELETE /conversations)
 class ConversationService {
     constructor() {
         this.listeners = new Map();
     }
 
-        // TEST : au premier lancement, les conversations d'exemple sont copiées dans le stockage.
-    // Ainsi les messages envoyés et l'état "lu / non lu" sont conservés comme pour de vraies conversations.
+    // TEST : au premier lancement, les conversations d'exemple sont copiÃ©es dans le stockage.
+    // Ainsi les messages envoyÃ©s et l'Ã©tat "lu / non lu" sont conservÃ©s comme pour de vraies conversations.
     seed() {
         if (Storage.get(SEEDED_KEY)) return;
         Storage.set(SEEDED_KEY, true);
@@ -27,13 +27,13 @@ class ConversationService {
         return Storage.get(KEY) || [];
     }
 
-    // Toutes les conversations (les plus récentes d'abord à l'affichage, voir list())
+    // Toutes les conversations (les plus rÃ©centes d'abord Ã  l'affichage, voir list())
     getAll() {
         return this.custom();
     }
 
     // Convertit les mocks en format moderne avec timestamps
-    // Convertit les exemples en conversations complètes, avec des horodatages fixes
+    // Convertit les exemples en conversations complÃ¨tes, avec des horodatages fixes
     convertMocks() {
         const now = Date.now();
         const oneHour = 60 * 60 * 1000;
@@ -88,7 +88,7 @@ class ConversationService {
         return this.getAll().find(c => String(c.id) === String(id)) || null;
     }
 
-    // Cherche une conversation existante pour le couple propriétaire + annonce
+    // Cherche une conversation existante pour le couple propriÃ©taire + annonce
     findByOwnerAndListing(ownerId, listingId) {
         return this.getAll().find(c =>
             c.type === 'direct' &&
@@ -97,7 +97,7 @@ class ConversationService {
         );
     }
 
-    // Cherche une conversation existante pour le propriétaire (sans annonce)
+    // Cherche une conversation existante pour le propriÃ©taire (sans annonce)
     findByOwner(ownerId) {
         return this.getAll().find(c =>
             c.type === 'direct' &&
@@ -111,7 +111,7 @@ class ConversationService {
         if (!user) return null;
         if (!listing || !listing.owner) return null;
 
-        // Interdit de s'écrire à soi-même
+        // Interdit de s'Ã©crire Ã  soi-mÃªme
         if (listing.ownerEmail && listing.ownerEmail === user.email) {
             return null;
         }
@@ -144,7 +144,7 @@ class ConversationService {
         if (!user) return null;
         if (!owner) return null;
 
-        // Interdit de s'écrire à soi-même
+        // Interdit de s'Ã©crire Ã  soi-mÃªme
         if (owner.ownerEmail && owner.ownerEmail === user.email) {
             return null;
         }
@@ -172,7 +172,7 @@ class ConversationService {
         return newConv;
     }
 
-    // Ouvre une conversation de consultation (après paiement confirmé)
+    // Ouvre une conversation de consultation (aprÃ¨s paiement confirmÃ©)
     openConsultation({ consultant, user, durationHours }) {
         if (!user) return null;
         if (!consultant) return null;
@@ -200,17 +200,19 @@ class ConversationService {
     }
 
     // Envoie un message
-    send(convId, text) {
-        const trimmed = text.trim();
-        if (!trimmed) return false;
+    send(convId, text, audio = null) {
+        const trimmed = String(text || '').trim();
+        const audioData = audio && audio.src;
+        if (!trimmed && !audioData) return false;
         if (trimmed.length > 1000) return false;
+        if (audioData && (!/^data:audio\/[a-z0-9.+-]+(?:;[^,]*)?;base64,/i.test(audioData) || audioData.length > 7000000)) return false;
 
         const conv = this.getById(convId);
         if (!conv) return false;
-                // Interdit d'écrire à un utilisateur bloqué
+        // Interdit d'Ã©crire Ã  un utilisateur bloquÃ©
         if (Moderation.isBlocked(conv.other?.id)) return false;
 
-        // Refuse l'envoi si la consultation est expirée
+        // Refuse l'envoi si la consultation est expirÃ©e
         if (conv.type === 'consultation' && this.isExpired(conv)) {
             return false;
         }
@@ -219,24 +221,37 @@ class ConversationService {
             id: 'm' + Date.now(),
             sender: 'me',
             text: trimmed,
-            sentAt: Date.now()
+            ...(audioData && { type: 'audio', audio: audioData, durationMs: audio.durationMs || 0 }),
+            sentAt: Date.now(),
+            status: 'sent'
         };
 
         conv.messages.push(message);
+        this.persist(conv);
 
-        // Si c'est une conversation custom, on la met à jour
-        const customs = this.custom();
-        const index = customs.findIndex(c => String(c.id) === String(convId));
-        if (index !== -1) {
-            customs[index] = conv;
-            Storage.set(KEY, customs);
-        }
-
-        // Notifie les écouteurs
+        // Notifie les Ã©couteurs
         this.notifyListeners(convId, message);
-          this.notifyListeners(convId, reply);
-        // MOCK : réponse automatique pour les conversations directes
-        if (!(this.listeners.get(convId) && this.listeners.get(convId).size > 0)) {
+
+        // MOCK (Ã  supprimer au branchement du WebSocket) : accusÃ©s puis rÃ©ponse automatique
+        if (conv.type === 'direct') {
+            setTimeout(() => this.setStatus(convId, message.id, 'delivered'), 600);
+
+            setTimeout(() => {
+                const reply = {
+                    id: 'm' + (Date.now() + 1),
+                    sender: 'other',
+                    text: 'Grazie per il messaggio! Ti risponderÃ² presto.',
+                    sentAt: Date.now()
+                };
+                conv.messages.push(reply);
+                this.persist(conv);
+
+                const watching = this.listeners.get(convId) && this.listeners.get(convId).size > 0;
+                this.setStatus(convId, message.id, 'read');
+                this.notifyListeners(convId, reply);
+
+                // Page fermÃ©e : on prÃ©vient par une notification
+                if (!watching) {
                     Notifications.add({
                         event: 'message.received',
                         params: { name: conv.other ? conv.other.name : '' },
@@ -244,33 +259,34 @@ class ConversationService {
                         uid: 'msg:' + reply.id
                     });
                 }
-        // À supprimer à M10 quand le WebSocket sera implémenté
-        if (conv.type === 'direct') {
-            setTimeout(() => {
-                const reply = {
-                    id: 'm' + (Date.now() + 1),
-                    sender: 'other',
-                    text: 'Grazie per il messaggio! Ti risponderò presto.',
-                    sentAt: Date.now()
-                };
-                conv.messages.push(reply);
-
-                const customs = this.custom();
-                const idx = customs.findIndex(c => String(c.id) === String(convId));
-                if (idx !== -1) {
-                    customs[idx] = conv;
-                    Storage.set(KEY, customs);
-                }
-
-                this.notifyListeners(convId, reply);
             }, 1500);
         }
 
         return true;
     }
+    
+        // Enregistre une conversation modifiÃ©e
+    persist(conv) {
+        const customs = this.custom();
+        const index = customs.findIndex(c => String(c.id) === String(conv.id));
+        if (index !== -1) {
+            customs[index] = conv;
+            Storage.set(KEY, customs);
+        }
+    }
 
+    // sent -> delivered -> read, jamais en arriÃ¨re
+    // TODO API : ces Ã©tats viendront du serveur (Ã©vÃ©nement WebSocket "message.status")
+    setStatus(convId, msgId, status) {
+        const order = { sent: 1, delivered: 2, read: 3 };
+        const conv = this.getById(convId);
+        const msg = conv && conv.messages.find(m => m.id === msgId);
+        if (!msg || (order[msg.status] || 0) >= order[status]) return;
+        msg.status = status;
+        this.persist(conv);
+        window.dispatchEvent(new CustomEvent('zafrimo:message-status', { detail: { convId, msgId, status } }));
+    }
     // Marque comme lus
-       // Marque comme lus
     markRead(convId) {
         const conv = this.getById(convId);
         if (!conv) return;
@@ -304,7 +320,7 @@ class ConversationService {
         return all.reduce((sum, conv) => sum + this.unreadCount(conv), 0);
     }
 
-    // Vérifie si une consultation est expirée
+    // VÃ©rifie si une consultation est expirÃ©e
     isExpired(conv) {
         if (!conv || conv.type !== 'consultation' || !conv.expiresAt) return false;
         return Date.now() > conv.expiresAt;
@@ -321,14 +337,14 @@ class ConversationService {
         return this.getAll().filter(c => c.type === 'consultation');
     }
 
-    // Abstraction temps réel : s'abonner aux nouveaux messages
+    // Abstraction temps rÃ©el : s'abonner aux nouveaux messages
     onMessage(convId, callback) {
         if (!this.listeners.has(convId)) {
             this.listeners.set(convId, new Set());
         }
         this.listeners.get(convId).add(callback);
 
-        // Retourne une fonction de désinscription
+        // Retourne une fonction de dÃ©sinscription
         return () => {
             const set = this.listeners.get(convId);
             if (set) {
@@ -340,19 +356,16 @@ class ConversationService {
         };
     }
 
-    // Notifie les écouteurs d'une conversation
-       // Notifie les écouteurs d'une conversation
     notifyListeners(convId, message) {
         const set = this.listeners.get(convId);
         if (set) {
             set.forEach(callback => callback(message));
         }
-        // Les compteurs (onglet Messages, icône) se mettent à jour en direct
+        // Les compteurs (onglet Messages, icÃ´ne) se mettent Ã  jour en direct
         window.dispatchEvent(new CustomEvent('zafrimo:unread-changed'));
     }
 
-    // Formatage de l'heure : HH:MM aujourd'hui, "Ieri", sinon jj/mm (locale it-IT)
-        // Formatage de l'heure : HH:MM aujourd'hui, "hier" traduit, sinon jj/mm
+    // Formatage selon la langue active.
     formatTime(timestamp) {
         const date = new Date(timestamp);
         const now = new Date();
@@ -365,7 +378,7 @@ class ConversationService {
         const yesterday = new Date(now);
         yesterday.setDate(now.getDate() - 1);
         if (date.toDateString() === yesterday.toDateString()) {
-            return I18n.t('notif.time.yesterday'); // clé créée au module 6
+            return I18n.t('notif.time.yesterday'); // clÃ© crÃ©Ã©e au module 6
         }
 
         return date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
@@ -373,3 +386,5 @@ class ConversationService {
 }
 
 export default new ConversationService();
+
+

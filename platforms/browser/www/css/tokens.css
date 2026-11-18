@@ -7,4 +7,11 @@
   --r-card:24px; --r-pill:999px; --blur:blur(20px);
   --font:'Inter',system-ui,-apple-system,sans-serif;
   --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+  
+/* Android : le WebView annonce parfois une marge basse plus grande que nécessaire
+   (la barre système est déjà exclue de l'écran). On la plafonne pour que la barre d'onglets
+   et le champ de saisie du chat descendent jusqu'au bord. */
+body.platform-android {
+    --safe-bottom: min(env(safe-area-inset-bottom, 0px), 12px);
+}
 }

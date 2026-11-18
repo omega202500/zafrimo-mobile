@@ -34,7 +34,7 @@ export default class ChatPage extends Page {
     this.view = new ChatView({ conv: this.conv, isExpired: false, isBlocked: blocked, t });
 
     // Envoi : le service prévient les écouteurs, l'affichage se fait dans onNewMessage
-    this.view.bindEvents(this.el, (text) => ConversationService.send(this.conv.id, text));
+    this.view.bindEvents(this.el, (text, audio) => ConversationService.send(this.conv.id, text, audio));
     this.view.scrollToBottom(this.el);
 
     // Menu "⋯" (profil, bloquer, signaler) et bouton "Débloquer"
@@ -45,9 +45,21 @@ export default class ChatPage extends Page {
     });
 
     this.unsubscribe = ConversationService.onMessage(this.conv.id, (m) => this.onNewMessage(m));
+
+        // Flèches ✓ / ✓✓ : mises à jour en direct
+    this.onStatus = (e) => {
+      if (e.detail.convId === this.conv.id) ChatView.updateStatus(this.el, e.detail.msgId, e.detail.status);
+    };
+    window.addEventListener('zafrimo:message-status', this.onStatus);
   }
 
   onLeave() {
+    this.view?.cancelRecording();
+
+    if (this.onStatus) {
+      window.removeEventListener('zafrimo:message-status', this.onStatus);
+      this.onStatus = null;
+    }
     if (this.unsubscribe) {
       this.unsubscribe();
       this.unsubscribe = null;

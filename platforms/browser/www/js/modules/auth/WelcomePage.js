@@ -32,11 +32,7 @@ export default class WelcomePage extends Page {
         <div class="hero"></div>
         <h1>${this.t('welcome.title')}</h1>
         <p class="muted">${this.t('welcome.sub')}</p>
-        <div class="pagination">
-          <div class="dot active"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div>
+        
         <button class="btn btn-lime" data-go="/register">${this.t('welcome.start')}</button>
         <button class="btn btn-glass" data-go="/login">${this.t('welcome.login')}</button>
       </section>

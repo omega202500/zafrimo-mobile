@@ -37,7 +37,7 @@ export default class ConsultationChatPage extends Page {
 
     this.view = new ChatView({ conv: this.conv, isExpired: expired, isBlocked: blocked, t });
 
-    this.view.bindEvents(this.el, (text) => ConversationService.send(this.conv.id, text));
+    this.view.bindEvents(this.el, (text, audio) => ConversationService.send(this.conv.id, text, audio));
     this.view.scrollToBottom(this.el);
 
     ChatView.bindModeration(this.el, this.conv, {
@@ -48,6 +48,12 @@ export default class ConsultationChatPage extends Page {
 
     this.unsubscribe = ConversationService.onMessage(this.conv.id, (m) => this.onNewMessage(m));
 
+        // Flèches ✓ / ✓✓ : mises à jour en direct
+    this.onStatus = (e) => {
+      if (e.detail.convId === this.conv.id) ChatView.updateStatus(this.el, e.detail.msgId, e.detail.status);
+    };
+    window.addEventListener('zafrimo:message-status', this.onStatus);
+
     // Le DOM existe : on peut lancer le compte à rebours
     this.updateTimerDisplay();
     if (!expired) {
@@ -56,6 +62,12 @@ export default class ConsultationChatPage extends Page {
   }
 
   onLeave() {
+    this.view?.cancelRecording();
+
+    if (this.onStatus) {
+      window.removeEventListener('zafrimo:message-status', this.onStatus);
+      this.onStatus = null;
+    }
     if (this.unsubscribe) {
       this.unsubscribe();
       this.unsubscribe = null;

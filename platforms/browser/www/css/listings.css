@@ -212,3 +212,120 @@
 .confirm-zone .btn {
     margin-bottom: 0;
 }
+
+
+/* ===== Galerie : vraie balise image ===== */
+.photo-gallery-item { cursor: zoom-in; }
+.photo-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.news-photo { position: relative; overflow: hidden; cursor: zoom-in; }
+.news-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== Visionneuse de photos plein écran ===== */
+body.viewer-open { overflow: hidden; }
+
+.viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 1400;
+    background: rgba(0, 0, 0, .96);
+    display: flex;
+    flex-direction: column;
+    animation: viewer-in .15s ease-out;
+}
+@keyframes viewer-in { from { opacity: 0; } to { opacity: 1; } }
+
+.viewer-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: calc(var(--safe-top) + 10px) 14px 10px;
+    pointer-events: none;
+}
+.viewer-top > * { pointer-events: auto; }
+
+.viewer-counter {
+    background: rgba(0, 0, 0, .6);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.viewer-close {
+    margin-left: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    font-size: 20px;
+    display: grid;
+    place-items: center;
+}
+
+.viewer-track {
+    flex: 1;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    scrollbar-width: none;
+}
+.viewer-track::-webkit-scrollbar { display: none; }
+.viewer-track.zoomed { overflow-x: hidden; touch-action: none; }
+
+.viewer-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.viewer-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: transform .2s ease;
+    will-change: transform;
+}
+.viewer-img.dragging { transition: none; }
+
+.viewer-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    font-size: 26px;
+    display: grid;
+    place-items: center;
+}
+.viewer-nav.prev { left: 10px; }
+.viewer-nav.next { right: 10px; }
+@media (hover: none) { .viewer-nav { display: none; } } /* sur téléphone, on balaie avec le doigt */

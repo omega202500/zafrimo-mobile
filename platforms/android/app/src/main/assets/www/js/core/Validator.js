@@ -16,9 +16,10 @@ class Validator {
     return value && value.length >= min;
   }
 
-  // Validation mot de passe (minimum 8 caractères)
+  // Validation mot de passe : même règle que le serveur Laravel
+  // (8 caractères minimum, avec une majuscule, une minuscule et un chiffre)
   static password(value) {
-    return this.minLength(value, 8);
+    return !!this.minLength(value, 8) && /[a-z]/.test(value) && /[A-Z]/.test(value) && /\d/.test(value);
   }
 
   // Validation correspondance de deux champs (ex: password confirmation)

@@ -4,13 +4,13 @@ const cancelledError = () => Object.assign(new Error('cancelled'), { cancelled: 
 
 class CameraService {
     // source : 'gallery' ou 'camera'
-    async pick(source = 'gallery') {
+    async pick(source = 'gallery', options = {}) {
         // Caméra : plugin Cordova si disponible. Galerie : toujours le sélecteur du système
         // (aucune permission à demander, fonctionne sur tous les Android).
         if (source === 'camera' && window.cordova && navigator.camera && window.Camera) {
             return this.fromCordovaCamera();
         }
-        return this.fromFileInput(source === 'camera');
+        return this.fromFileInput(source === 'camera', options);
     }
 
     fromCordovaCamera() {
@@ -34,14 +34,14 @@ class CameraService {
         });
     }
 
-    fromFileInput(useCamera) {
+    fromFileInput(useCamera, options = {}) {
         return new Promise((resolve, reject) => {
             // On nettoie d'éventuels anciens sélecteurs restés dans la page
             document.querySelectorAll('input[data-picker]').forEach(i => i.remove());
 
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = 'image/*';
+            input.accept = options.listing ? 'image/jpeg,image/png,image/webp' : 'image/*';
             input.dataset.picker = '1';
             if (useCamera) input.capture = 'environment';
             // IMPORTANT : l'élément doit être DANS la page. Sinon Android peut le supprimer
@@ -54,7 +54,9 @@ class CameraService {
                 input.remove();
                 if (!file) return reject(cancelledError());
                 // Certaines galeries donnent un type vide : on ne refuse que les types clairement non image
-                if (file.type && !file.type.startsWith('image/')) return reject(new Error('not-an-image'));
+                if (options.listing && !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return reject(new Error('photo-type'));
+                if (!options.listing && file.type && !file.type.startsWith('image/')) return reject(new Error('not-an-image'));
+                if (options.maxSizeBytes && file.size > options.maxSizeBytes) return reject(new Error('photo-size'));
                 this.resize(file).then(resolve, reject);
             });
             input.addEventListener('cancel', () => { input.remove(); reject(cancelledError()); });

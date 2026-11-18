@@ -1,97 +1,150 @@
 import Storage from './StorageService.js';
-import settings from '../mocks/settings.js';
+import Api, { ApiError } from './ApiService.js';
+import I18n from './I18nService.js';
+import { ASSET_URL } from '../config.js';
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const ACCOUNT_KEYS = ['token', 'user', 'pendingRegistration', 'otpEmail', 'otpVerified', 'resetEmail',
+  'starsRequest', 'notif_prefs', 'blocked_users', 'conversations_custom', 'conversations_seeded'];
 
-// Service d'authentification (MOCK Sanctum)
-// TODO API (Laravel) : POST /auth/login · /auth/register · /auth/verify-otp · /auth/forgot-password ·
-//   /auth/reset-password · /auth/change-password · PUT /me/consultant-rate · DELETE /me
-// Les nouvelles méthodes (resetPassword, changePassword) lèvent des erreurs avec un CODE
-// ('invalid-code', 'wrong-password'...) que les pages traduisent.
+// Service d'authentification (Laravel Sanctum)
+// CONNECTÉ À L'API : POST /register · POST /login · POST /logout · GET /me
+// ENCORE SIMULÉ (pas d'endpoint côté serveur) : mot de passe oublié / réinitialisation / changement,
+//   code OTP, taux de consultation, suppression du compte.
+// Les erreurs sont des Error avec un CODE ('invalid-credentials', 'email-taken'...) que les pages traduisent.
 class AuthService {
   isLogged() { return !!Storage.get('token'); }
 
-  // Le rôle consultant est accordé par l'administrateur (cahier 5 et 11) : il vient du serveur.
-  // TEST uniquement : sans API, un mot dans l'e-mail simule les rôles.
-  mockRoles(email) {
-    if (!settings.devRolesByEmail) return { isConsultant: false, isOwner: false };
-    const lower = (email || '').toLowerCase();
-    const isConsultant = lower.includes('consult');
-    return { isConsultant, isOwner: isConsultant || lower.includes('owner') };
-  }
+  // Transforme l'utilisateur renvoyé par l'API Laravel (user + profile) en objet utilisé par l'application
+  mapUser(u = {}) {
+    const p = u.profile || {};
+    const isConsultant = !!p.is_consultant;
+    const isOwner = u.role === 'owner' || isConsultant;
+    const price = p.consultation_price_cents;
 
-  buildUser({ email, name, stars, isOwner, isConsultant, extra = {} }) {
-    return {
-      email,
-      name,
-      stars,
-      role: isConsultant ? 'consultant' : (isOwner ? 'owner' : 'visitor'),
+    const user = {
+      id: u.id,
+      email: u.email,
+      name: p.display_name || u.email,
+      username: p.display_name,
+      stars: Number(u.stars_count ?? p.stars ?? 0),
+      role: isConsultant ? 'consultant' : (u.role || 'visitor'),
       isOwner,
       isConsultant,
-      rate: isConsultant ? settings.defaultConsultationPrice : undefined,
-      available: true,
-      status: 'active', // 'active' ou 'suspended' (décidé par l'administrateur)
-      ...extra
+      rate: isConsultant && price != null ? price / 100 : undefined,
+      available: p.availability_status ? p.availability_status !== 'unavailable' : true,
+      status: u.status === 'suspended' ? 'suspended' : 'active', // décidé par l'administrateur
+      city: p.city,
+      bio: p.bio,
+      photoUrl: p.photo_path ? `${ASSET_URL}/storage/${p.photo_path}` : undefined,
+      locale: u.locale,
+      createdAt: u.created_at ? Date.parse(u.created_at) : undefined
     };
+    // On retire les champs absents pour ne pas écraser ce qui est déjà stocké
+    Object.keys(user).forEach(k => user[k] === undefined && delete user[k]);
+    return user;
+  }
+
+  // Convertit une erreur de l'API en code d'erreur que les pages savent traduire
+  toAuthError(err) {
+    if (!(err instanceof ApiError)) return err;
+
+    let code = 'generic';
+    let fields;
+
+    if (err.status === 0) code = 'network';              // serveur injoignable / délai dépassé
+    else if (err.status === 401) code = 'invalid-credentials';
+    else if (err.status === 403) code = 'account-suspended';
+    else if (err.status === 422) {
+      // Erreurs de validation Laravel : { errors: { email: [...], password: [...] } }
+      const errors = (err.data && err.data.errors) || {};
+      fields = {};
+      // La forme de l'e-mail est vérifiée avant l'envoi : si le serveur la refuse, c'est qu'elle est déjà utilisée
+      if (errors.email) fields.email = 'email-taken';
+      if (errors.password) fields.password = 'weak-password';
+      code = errors.email ? 'email-taken' : (errors.password ? 'weak-password' : 'required-fields');
+    }
+
+    const error = new Error(code);
+    error.status = err.status;
+    if (fields && Object.keys(fields).length) error.fields = fields;
+    return error;
   }
 
   async login(email, password) {
-    await wait(600);
-
     if (!email || !password) {
-      throw new Error('Compila tutti i campi');
+      throw new Error('required-fields');
     }
     if (!email.includes('@')) {
-      throw new Error('E-mail non valida');
-    }
-    if (password.length < 6) {
-      throw new Error('Identificativi errati');
+      throw new Error('invalid-email');
     }
 
-    const { isConsultant, isOwner } = this.mockRoles(email);
+    let data;
+    try {
+      data = await Api.post('/login', { email, password });
+    } catch (err) {
+      throw this.toAuthError(err);
+    }
 
-    Storage.set('token', 'mock-token');
-    Storage.set('user', this.buildUser({
-      email,
-      name: isConsultant ? 'Giulia' : (isOwner ? 'Luca' : 'Marco'),
-      stars: isConsultant ? 5 : (isOwner ? 4 : 2),
-      isOwner,
-      isConsultant
-    }));
+    Storage.set('token', data.token);
+    Storage.set('user', this.mapUser(data.user));
   }
 
   async register(data) {
-    await wait(600);
-
     const { username, email, city, phone, profession, description, password, profileType } = data;
 
     if (!username || !email || !city || !password) {
-      throw new Error('Compila tutti i campi');
+      throw new Error('required-fields');
     }
     if (!email.includes('@')) {
-      throw new Error('E-mail non valida');
+      throw new Error('invalid-email');
     }
     if (password.length < 8) {
-      throw new Error('La password deve contenere almeno 8 caratteri');
+      throw new Error('weak-password');
     }
     // Seuls "visiteur" et "propriétaire / professionnel" existent à l'inscription (cahier 6.1)
     if (profileType !== 'visitor' && profileType !== 'owner') {
-      throw new Error('Compila tutti i campi');
+      throw new Error('required-fields');
     }
 
-    // Sécurité : NE JAMAIS stocker le mot de passe dans pendingRegistration
-    Storage.set('pendingRegistration', {
-      username,
-      email,
-      city,
-      phone,
-      profession,
-      description,
-      profileType
-    });
+    let res;
+    try {
+      res = await Api.post('/register', {
+        display_name: username,
+        email,
+        password,
+        password_confirmation: password, // la confirmation a déjà été vérifiée dans le formulaire
+        role: profileType,
+        locale: I18n.getCurrentLang(),
+        accept_terms: true,
+        accept_privacy: true
+      });
+    } catch (err) {
+      throw this.toAuthError(err);
+    }
 
-    await this.sendOtp(email);
-    return { requiresOtp: true, email };
+    // Le serveur renvoie directement un jeton : pas d'étape de vérification par code
+    Storage.set('token', res.token);
+    Storage.set('user', {
+      ...this.mapUser(res.user),
+      // Ces champs ne sont pas encore enregistrés par l'API (/register ne les accepte pas) : gardés sur l'appareil
+      city,
+      phone, // jamais affiché (cahier 6.2)
+      profession,
+      description
+    });
+    Storage.remove('pendingRegistration');
+
+    return { requiresOtp: false, email };
+  }
+
+  // Met à jour l'utilisateur stocké avec les données du serveur (rôle, statut suspendu, étoiles...)
+  async refresh() {
+    if (!this.isLogged()) return null;
+    const data = await Api.get('/me');
+    const user = { ...(this.user() || {}), ...this.mapUser(data.user) };
+    Storage.set('user', user);
+    return user;
   }
 
   // Envoie un code de récupération (cahier 6.1). La réponse ne dit jamais si l'e-mail existe.
@@ -99,26 +152,26 @@ class AuthService {
     await wait(600);
 
     if (!email) {
-      throw new Error('E-mail obbligatoria');
+      throw new Error('required-email');
     }
     if (!email.includes('@')) {
-      throw new Error('E-mail non valida');
+      throw new Error('invalid-email');
     }
-    // TODO API : POST /auth/forgot-password { email } -> le serveur envoie un code à 6 chiffres
+    // TODO API : POST /auth/forgot-password { email } -> le serveur envoie un code à 6 chiffres (n'existe pas encore côté Laravel)
   }
 
   // Nouveau mot de passe avec le code reçu par e-mail
-  // TODO API : POST /auth/reset-password { email, code, password }
+  // TODO API : POST /auth/reset-password { email, code, password } (n'existe pas encore côté Laravel)
   async resetPassword({ email, code, password }) {
     await wait(600);
 
     if (!email || !email.includes('@')) throw new Error('invalid-email');
-    if (code !== '123456') throw new Error('invalid-code'); // MOCK : le vrai code vient du serveur
+    if (code !== '123456') throw new Error('invalid-code'); // MOCK : le vrai code viendra du serveur
     if (!password || password.length < 8) throw new Error('weak-password');
   }
 
   // Changement du mot de passe d'un utilisateur connecté
-  // TODO API : POST /auth/change-password { current, next }
+  // TODO API : POST /auth/change-password { current, next } (n'existe pas encore côté Laravel)
   async changePassword({ current, next }) {
     await wait(600);
 
@@ -128,66 +181,10 @@ class AuthService {
     if (next === current) throw new Error('same-password');
   }
 
-  async sendOtp(email) {
-    await wait(600);
-
-    if (!email) {
-      throw new Error('E-mail obbligatoria');
-    }
-    if (!email.includes('@')) {
-      throw new Error('E-mail non valida');
-    }
-  }
-
-  async verifyOtp(email, otp) {
-    await wait(600);
-
-    if (!otp || otp.length !== 6) {
-      throw new Error('Codice non valido');
-    }
-    if (otp !== '123456') { // MOCK : le vrai code vient du serveur
-      throw new Error('Codice non valido');
-    }
-
-    Storage.set('otpVerified', true);
-
-    const pending = Storage.get('pendingRegistration');
-    if (pending) {
-      // Nouveau compte : 0 étoile, jamais consultant (c'est l'administrateur qui autorise)
-      const roles = this.mockRoles(pending.email);
-      const isOwner = pending.profileType === 'owner' || roles.isOwner;
-
-      Storage.set('token', 'mock-token');
-      Storage.set('user', this.buildUser({
-        email: pending.email,
-        name: pending.username,
-        stars: 0,
-        isOwner,
-        isConsultant: roles.isConsultant,
-        extra: {
-          username: pending.username,
-          city: pending.city,
-          phone: pending.phone, // jamais affiché (cahier 6.2)
-          profession: pending.profession,
-          description: pending.description,
-          createdAt: Date.now()
-        }
-      }));
-      Storage.remove('pendingRegistration');
-    } else {
-      // Connexion par code : même logique que la connexion classique
-      const { isConsultant, isOwner } = this.mockRoles(email);
-
-      Storage.set('token', 'mock-token');
-      Storage.set('user', this.buildUser({
-        email,
-        name: isConsultant ? 'Giulia' : (isOwner ? 'Luca' : 'Marco'),
-        stars: isConsultant ? 5 : (isOwner ? 4 : 2),
-        isOwner,
-        isConsultant
-      }));
-    }
-  }
+  // Vérification par code OTP : l'API Laravel n'a pas (encore) d'endpoint pour ça, et l'inscription
+  // renvoie déjà un jeton. On refuse plutôt que de simuler une session avec un faux jeton.
+  async sendOtp() { throw new Error('feature-unavailable'); }
+  async verifyOtp() { throw new Error('feature-unavailable'); }
 
   async updateRate(rate) {
     await wait(300);
@@ -200,17 +197,16 @@ class AuthService {
   }
 
   // Suppression du compte (exigence des stores, cahier 6.1)
-  // TODO API : DELETE /me
+  // TODO API : DELETE /me (n'existe pas encore côté Laravel : seules les données locales sont effacées)
   async deleteAccount() {
     await wait(400);
-       ['token', 'user', 'pendingRegistration', 'otpEmail', 'otpVerified', 'resetEmail',
-      'starsRequest', 'notif_prefs', 'blocked_users',
-      'conversations_custom', 'conversations_seeded'].forEach(key => Storage.remove(key));
+    ACCOUNT_KEYS.forEach(key => Storage.remove(key));
   }
 
   logout() {
-    Storage.remove('token');
-    Storage.remove('user');
+    // On prévient le serveur (le jeton est lu avant d'être effacé) sans attendre sa réponse
+    if (Storage.get('token')) Api.post('/logout').catch(() => {});
+    ACCOUNT_KEYS.forEach(key => Storage.remove(key));
   }
 
   user() { return Storage.get('user'); }

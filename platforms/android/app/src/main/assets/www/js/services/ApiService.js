@@ -1,6 +1,7 @@
 import Storage from './StorageService.js';
+import { API_URL } from '../config.js'; // l'adresse de l'API se change dans js/config.js
 
-export const API_URL = 'https://api.zafrimo.example/api'; // à remplacer par l'URL réelle de l'API Laravel
+export { API_URL };
 const TIMEOUT_MS = 15000;
 
 // Erreur d'API. status = 0 quand il n'y a pas de réponse (réseau coupé, délai dépassé).
@@ -18,6 +19,7 @@ class ApiService {
     const token = Storage.get('token');
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    const isForm = typeof FormData !== 'undefined' && body instanceof FormData;
 
     let res;
     try {
@@ -25,11 +27,12 @@ class ApiService {
         method,
         signal: controller.signal,
         headers: {
-          'Content-Type': 'application/json',
+          // Pour un FormData (envoi de photo), le navigateur fixe lui-même le Content-Type
+          ...(!isForm && { 'Content-Type': 'application/json' }),
           Accept: 'application/json',
           ...(token && { Authorization: `Bearer ${token}` })
         },
-        body: body === undefined ? undefined : JSON.stringify(body)
+        body: body === undefined ? undefined : (isForm ? body : JSON.stringify(body))
       });
     } catch (err) {
       // Pas de réseau, serveur injoignable ou délai dépassé

@@ -1,8 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src *; script-src 'self' 'unsafe-inline'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: http: https:; media-src 'self' data: blob: http: https:; connect-src 'self' http: https:; script-src 'self'">
 <title>ZAFrimo</title>
+<!-- API : l'adresse se règle dans js/config.js. connect-src et img-src acceptent http: et https: pour le développement ;
+     avant la publication, remplace-les par le domaine exact du backend Render (ex. https://zafrimo-api.onrender.com). -->
+</head><body>
 <link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/base.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/auth.css"><link rel="stylesheet" href="css/listings.css">
 <link rel="stylesheet" href="css/chat.css"><link rel="stylesheet" href="css/moderation.css">
 <link rel="stylesheet" href="css/consulting.css">
@@ -14,3 +17,4 @@
 <script src="cordova.js"></script>
 <script type="module" src="js/main.js"></script>
 </body></html>
+

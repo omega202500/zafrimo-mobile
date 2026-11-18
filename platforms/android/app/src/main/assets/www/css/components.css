@@ -411,3 +411,5 @@ select.field option {
     height: 100%;
     object-fit: cover;
 }
+/* Indicateur clavier discret, absent lors des interactions tactiles. */
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }

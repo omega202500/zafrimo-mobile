@@ -16,6 +16,11 @@ export default class Router {
     this.lastTabIndex = -1; // dernière rubrique affichée, pour le sens du glissement
   }
 
+  static guardRedirect(access, isLogged, user) {
+    if (access === 'public' || isLogged && (access !== 'owner' || user?.role === 'owner' || user?.isOwner || user?.isConsultant) && (access !== 'consultant' || user?.isConsultant)) return null;
+    return isLogged ? '/profile' : '/login';
+  }
+
   start() {
     addEventListener('hashchange', () => this.resolve());
     this.resolve();
@@ -89,23 +94,10 @@ export default class Router {
       return;
     }
 
-    if (access !== 'public') {
-      if (!isLogged) {
-        if (location.hash !== '#/login') {
-          this.go('/login');
-          return;
-        }
-      } else if (access === 'owner' && !(user?.role === 'owner' || user?.isOwner || user?.isConsultant)) {
-        if (location.hash !== '#/profile') {
-          this.go('/profile');
-          return;
-        }
-      } else if (access === 'consultant' && !user?.isConsultant) {
-        if (location.hash !== '#/profile') {
-          this.go('/profile');
-          return;
-        }
-      }
+    const redirect = Router.guardRedirect(access, isLogged, user);
+    if (redirect && location.hash !== '#' + redirect) {
+      this.go(redirect);
+      return;
     }
 
     this.current?.onLeave();

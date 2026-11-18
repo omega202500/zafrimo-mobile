@@ -4,7 +4,9 @@ import Validator from '../../core/Validator.js';
 import FormField from '../../components/FormField.js';
 import PasswordField from '../../components/PasswordField.js';
 import Storage from '../../services/StorageService.js';
+import I18n from '../../services/I18nService.js';
 import { setFieldError } from '../../core/FormUtils.js';
+import { authErrorMessage } from './authError.js';
 
 // Tous les champs qui peuvent afficher une erreur
 const FIELD_IDS = ['username', 'email', 'city', 'phone', 'profession', 'description', 'password', 'confirmPassword', 'terms'];
@@ -28,6 +30,14 @@ export default class RegisterPage extends Page {
         <div class="hero"></div>
         <div class="content">
           ${this.header(this.t('register.title'), { back: true })}
+
+          <!-- Bouton de sélection de la langue -->
+          <div class="menu-item" data-go="/language" style="cursor: pointer; margin-bottom: 20px;">
+            <span>🌐</span>
+            <span>${this.t('settings.language')}</span>
+            <span class="muted">${I18n.getLangName(I18n.getCurrentLang())}</span>
+            <span>›</span>
+          </div>
 
           <div class="profile-cards">
             <div class="profile-card selected" data-profile="visitor">
@@ -166,9 +176,8 @@ export default class RegisterPage extends Page {
       if (submit.disabled) return; // protection contre le double clic
 
       const errors = this.validate();
-      FIELD_IDS.forEach(id => setFieldError(root, id, errors[id] || ''));
-
       if (Object.keys(errors).length > 0) {
+        FIELD_IDS.forEach(id => setFieldError(root, id, errors[id] || ''));
         // On amène l'utilisateur sur la première erreur
         const first = root.querySelector('[aria-invalid="true"]');
         if (first) {
@@ -201,7 +210,15 @@ export default class RegisterPage extends Page {
           this.app.router.go('/listings');
         }
       } catch (e) {
-        setFieldError(root, 'email', e.message); // ex: e-mail déjà utilisé
+        // L'API peut désigner le champ fautif (ex : e-mail déjà utilisé, mot de passe trop faible)
+        const fields = Object.entries(e.fields || {});
+        if (fields.length) {
+          fields.forEach(([id, code]) => setFieldError(root, id, authErrorMessage({ message: code }, key => this.t(key))));
+          const first = root.querySelector('[aria-invalid="true"]');
+          if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          setFieldError(root, 'email', authErrorMessage(e, key => this.t(key))); // ex: serveur injoignable
+        }
         submit.classList.remove('loading');
         submit.disabled = false;
       }

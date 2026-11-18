@@ -1,6 +1,7 @@
 import I18n from '../services/I18nService.js';
 import Auth from '../services/AuthService.js';
 import Notifications from '../services/NotificationService.js';
+import { escapeHtml } from './Html.js';
 
 export default class Page {
   static route = '/';
@@ -26,8 +27,8 @@ export default class Page {
     const unread = showNotifications ? Notifications.unreadCount() : 0;
 
     return `<div class="topbar">
-      ${back ? '<button class="round" data-back>‹</button>' : '<span></span>'}
-      <strong>${title}</strong>
+      ${back ? `<button class="round" data-back aria-label="${this.t('common.back')}">&#8249;</button>` : '<span></span>'}
+      <strong>${escapeHtml(title)}</strong>
       ${showNotifications ? `<button class="round bell" data-go="/notifications" aria-label="${this.t('notif.title')}">🔔<span class="bell-badge" data-bell-badge ${unread ? '' : 'hidden'}>${unread > 9 ? '9+' : unread}</span></button>` : '<span></span>'}
     </div>`;
   }

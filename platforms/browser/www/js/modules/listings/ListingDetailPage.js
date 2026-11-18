@@ -6,6 +6,7 @@ import ConversationService from '../../services/ConversationService.js';
 import { escapeHtml, textToHtml } from '../../core/Html.js';
 import Moderation from '../../services/ModerationService.js';
 import ReportModal from '../../components/ReportModal.js';
+import PhotoViewer from '../../components/PhotoViewer.js';
 
 export default class ListingDetailPage extends Page {
   static route = '/listings/:id';
@@ -54,7 +55,8 @@ export default class ListingDetailPage extends Page {
         ${photos.length > 0 ? `
         <div class="photo-gallery glass">
           ${photos.map((p, i) => `
-            <div class="photo-gallery-item" style="background-image: url('${p}');">
+            <div class="photo-gallery-item" data-photo-index="${i}">
+              <img src="${escapeHtml(p)}" alt="">
               ${photos.length > 1 ? `<span class="photo-gallery-counter">${i + 1} / ${photos.length}</span>` : ''}
             </div>
           `).join('')}
@@ -124,6 +126,15 @@ export default class ListingDetailPage extends Page {
           this.app.router.go('/owner/' + ownerId);
         }
       };
+    }
+
+        // Toucher une photo : visionneuse plein écran
+    if (this.listing) {
+      const l = this.listing;
+      const photos = l.photos && l.photos.length > 0 ? l.photos : (l.photo ? [l.photo] : []);
+      this.el.querySelectorAll('.photo-gallery-item').forEach(item => {
+        item.onclick = () => PhotoViewer.open(photos, Number(item.dataset.photoIndex));
+      });
     }
 
     // Contact button for visitors

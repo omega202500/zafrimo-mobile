@@ -42,10 +42,9 @@ body.is-chat #view {
 .chat-listing .chip { flex: none; margin: 0; padding: 4px 10px; font-size: 12px; }
 
 /* ----- Timer de consultation ----- */
-.chat-timer { padding: 12px; text-align: center; }
-.chat-timer strong { font-size: 16px; color: var(--lime); }
-.chat-timer strong.warn { color: var(--error); }
-.chat-timer strong.done { color: var(--text-2); }
+.chat-time { font-size: 11px; opacity: .7; margin-top: 4px; text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+.chat-ticks { display: inline-flex; line-height: 0; }
+.chat-ticks.read { color: #1a73e8; }
 
 /* ----- Zone de chat ----- */
 .chat-container {
@@ -152,3 +151,17 @@ body.is-chat #view {
     font-size: 11px;
     font-weight: 700;
 }
+.chat-input-row .round.chat-voice { flex: none; }
+.chat-voice-status { margin: 6px 4px 0; font-size: 12px; }
+.chat-audio { display: block; max-width: 100%; width: 230px; }
+
+.voice-preview { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.voice-preview[hidden], .chat-input-row[hidden], .voice-preview [hidden] { display: none; }
+.voice-time { flex: none; min-width: 38px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.voice-record-dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--error); opacity: .35; }
+.voice-preview.is-recording .voice-record-dot { opacity: 1; animation: voice-pulse 1s infinite; }
+.voice-wave { flex: 1; min-width: 28px; height: 30px; display: flex; align-items: center; justify-content: center; gap: 2px; overflow: hidden; }
+.voice-wave span { width: 2px; height: 24px; transform: scaleY(var(--level, .2)); border-radius: 2px; background: var(--lime); transition: transform .08s linear; }
+.voice-send { background: var(--lime); color: var(--lime-ink); }
+.voice-cancel, .voice-pause, .voice-send { flex: none; }
+@keyframes voice-pulse { 50% { opacity: .35; } }

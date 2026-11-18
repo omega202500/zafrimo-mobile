@@ -8,6 +8,8 @@ import LockedState from '../../components/LockedState.js';
 import { escapeHtml } from '../../core/Html.js';
 import { setFieldError } from '../../core/FormUtils.js';
 
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
+
 export default class ListingPublishPage extends Page {
   static route = '/listings/new';
   static access = 'auth';
@@ -205,14 +207,14 @@ export default class ListingPublishPage extends Page {
     }
 
     try {
-      const photo = await CameraService.pick(source);
+      const photo = await CameraService.pick(source, { listing: true, maxSizeBytes: MAX_PHOTO_SIZE });
       this.photos.push(photo);
       this.updatePhotoPreview();
       this.updateThumbnails();
       setFieldError(this.el, 'photo', '');
     } catch (err) {
       if (!err.cancelled) {
-        setFieldError(this.el, 'photo', this.t('listings.photoError'));
+        setFieldError(this.el, 'photo', this.t(err.message === 'photo-type' ? 'listings.photoType' : (err.message === 'photo-size' ? 'listings.photoSize' : 'listings.photoError')));
       }
     }
   }

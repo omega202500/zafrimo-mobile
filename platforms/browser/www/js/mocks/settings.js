@@ -15,7 +15,9 @@ export default {
         companyName: '[Ragione sociale da completare]',
         address: '[Indirizzo da completare]',
         vatNumber: '[P. IVA da completare]',
-        email: 'support@zafrimo.example'
+        email: 'support@zafrimo.example',
+        liveEnabled: false,           // emplacement "Live" de la navigation (cahier 7.1). À activer seulement quand la rubrique /live existera (cahier 21)
+        
     },
 
     // --- Consulting payant (cahier section 10) ---

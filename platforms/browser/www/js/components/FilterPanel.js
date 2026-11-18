@@ -18,7 +18,7 @@ export default class FilterPanel extends Component {
                 <div class="filter-panel glass">
                     <div class="filter-panel-header">
                         <h3>${t('filters.title')}</h3>
-                        <button class="round" id="closeFilter">✕</button>
+                        <button class="round" id="closeFilter" aria-label="${t('common.close')}">✕</button>
                     </div>
 
                     <div class="filter-section">
