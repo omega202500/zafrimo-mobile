@@ -3,14 +3,13 @@ import Api, { ApiError } from './ApiService.js';
 import I18n from './I18nService.js';
 import { ASSET_URL } from '../config.js';
 
-const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const ACCOUNT_KEYS = ['token', 'user', 'pendingRegistration', 'otpEmail', 'otpVerified', 'resetEmail',
   'starsRequest', 'notif_prefs', 'blocked_users', 'conversations_custom', 'conversations_seeded'];
 
 // Service d'authentification (Laravel Sanctum)
-// CONNECTÉ À L'API : POST /register · POST /login · POST /logout · GET /me
-// ENCORE SIMULÉ (pas d'endpoint côté serveur) : mot de passe oublié / réinitialisation / changement,
-//   code OTP, taux de consultation, suppression du compte.
+// CONNECTÉ À L'API : POST /register · /login · /logout · GET /me · POST /forgot-password · /reset-password
+//   · /change-password · PUT /me/consultant-rate · DELETE /me
+// ENCORE ABSENT côté serveur : vérification par code OTP (sendOtp / verifyOtp).
 // Les erreurs sont des Error avec un CODE ('invalid-credentials', 'email-taken'...) que les pages traduisent.
 class AuthService {
   isLogged() { return !!Storage.get('token'); }
@@ -34,7 +33,7 @@ class AuthService {
       rate: isConsultant && price != null ? price / 100 : undefined,
       available: p.availability_status ? p.availability_status !== 'unavailable' : true,
       status: u.status === 'suspended' ? 'suspended' : 'active', // décidé par l'administrateur
-      city: p.city,
+      city: p.city && typeof p.city === 'object' ? p.city.name : p.city,
       bio: p.bio,
       photoUrl: p.photo_path ? `${ASSET_URL}/storage/${p.photo_path}` : undefined,
       locale: u.locale,
@@ -46,15 +45,19 @@ class AuthService {
   }
 
   // Convertit une erreur de l'API en code d'erreur que les pages savent traduire
-  toAuthError(err) {
+  // forbiddenCode : sens d'un 403 (par défaut : compte suspendu, à la connexion)
+  toAuthError(err, { forbiddenCode = 'account-suspended' } = {}) {
     if (!(err instanceof ApiError)) return err;
 
+    // Codes explicites envoyés par l'API : 'invalid-code', 'wrong-password', 'same-password', 'delete-blocked'
+    const SERVER_CODES = ['invalid-code', 'wrong-password', 'same-password', 'delete-blocked'];
     let code = 'generic';
     let fields;
 
-    if (err.status === 0) code = 'network';              // serveur injoignable / délai dépassé
+    if (err.data && SERVER_CODES.includes(err.data.code)) code = err.data.code;
+    else if (err.status === 0) code = 'network';          // serveur injoignable / délai dépassé
     else if (err.status === 401) code = 'invalid-credentials';
-    else if (err.status === 403) code = 'account-suspended';
+    else if (err.status === 403) code = forbiddenCode;
     else if (err.status === 422) {
       // Erreurs de validation Laravel : { errors: { email: [...], password: [...] } }
       const errors = (err.data && err.data.errors) || {};
@@ -116,6 +119,10 @@ class AuthService {
         password_confirmation: password, // la confirmation a déjà été vérifiée dans le formulaire
         role: profileType,
         locale: I18n.getCurrentLang(),
+        city,
+        phone: phone || undefined,
+        profession: profession || undefined,
+        description: description || undefined,
         accept_terms: true,
         accept_privacy: true
       });
@@ -125,10 +132,10 @@ class AuthService {
 
     // Le serveur renvoie directement un jeton : pas d'étape de vérification par code
     Storage.set('token', res.token);
+    const mapped = this.mapUser(res.user);
     Storage.set('user', {
-      ...this.mapUser(res.user),
-      // Ces champs ne sont pas encore enregistrés par l'API (/register ne les accepte pas) : gardés sur l'appareil
-      city,
+      ...mapped,
+      city: mapped.city || city,
       phone, // jamais affiché (cahier 6.2)
       profession,
       description
@@ -147,38 +154,45 @@ class AuthService {
     return user;
   }
 
-  // Envoie un code de récupération (cahier 6.1). La réponse ne dit jamais si l'e-mail existe.
+  // Envoie un code de récupération par e-mail (cahier 6.1). La réponse ne dit jamais si l'e-mail existe.
   async forgotPassword(email) {
-    await wait(600);
-
     if (!email) {
       throw new Error('required-email');
     }
     if (!email.includes('@')) {
       throw new Error('invalid-email');
     }
-    // TODO API : POST /auth/forgot-password { email } -> le serveur envoie un code à 6 chiffres (n'existe pas encore côté Laravel)
+    try {
+      await Api.post('/forgot-password', { email, locale: I18n.getCurrentLang() });
+    } catch (err) {
+      throw this.toAuthError(err);
+    }
   }
 
   // Nouveau mot de passe avec le code reçu par e-mail
-  // TODO API : POST /auth/reset-password { email, code, password } (n'existe pas encore côté Laravel)
   async resetPassword({ email, code, password }) {
-    await wait(600);
-
     if (!email || !email.includes('@')) throw new Error('invalid-email');
-    if (code !== '123456') throw new Error('invalid-code'); // MOCK : le vrai code viendra du serveur
+    if (!code || !/^\d{6}$/.test(code)) throw new Error('invalid-code');
     if (!password || password.length < 8) throw new Error('weak-password');
+
+    try {
+      await Api.post('/reset-password', { email, code, password });
+    } catch (err) {
+      throw this.toAuthError(err);
+    }
   }
 
   // Changement du mot de passe d'un utilisateur connecté
-  // TODO API : POST /auth/change-password { current, next } (n'existe pas encore côté Laravel)
   async changePassword({ current, next }) {
-    await wait(600);
-
-    // MOCK : aucun mot de passe n'est stocké, on applique la règle de connexion (6 caractères minimum)
-    if (!current || current.length < 6) throw new Error('wrong-password');
+    if (!current) throw new Error('wrong-password');
     if (!next || next.length < 8) throw new Error('weak-password');
     if (next === current) throw new Error('same-password');
+
+    try {
+      await Api.post('/change-password', { current_password: current, password: next });
+    } catch (err) {
+      throw this.toAuthError(err);
+    }
   }
 
   // Vérification par code OTP : l'API Laravel n'a pas (encore) d'endpoint pour ça, et l'inscription
@@ -186,20 +200,29 @@ class AuthService {
   async sendOtp() { throw new Error('feature-unavailable'); }
   async verifyOtp() { throw new Error('feature-unavailable'); }
 
+  // Tarif de consultation (réservé aux consultants validés par l'administration)
   async updateRate(rate) {
-    await wait(300);
+    let res;
+    try {
+      res = await Api.put('/me/consultant-rate', { rate: Number(rate) });
+    } catch (err) {
+      throw this.toAuthError(err, { forbiddenCode: 'generic' });
+    }
     const user = this.user();
     if (user) {
-      user.rate = Number(rate);
+      user.rate = Number(res.rate);
       Storage.set('user', user);
     }
     return user;
   }
 
-  // Suppression du compte (exigence des stores, cahier 6.1)
-  // TODO API : DELETE /me (n'existe pas encore côté Laravel : seules les données locales sont effacées)
+  // Suppression du compte (exigence des stores, cahier 6.1). Refusée tant qu'une consultation est en cours.
   async deleteAccount() {
-    await wait(400);
+    try {
+      await Api.delete('/me');
+    } catch (err) {
+      throw this.toAuthError(err, { forbiddenCode: 'generic' });
+    }
     ACCOUNT_KEYS.forEach(key => Storage.remove(key));
   }
 

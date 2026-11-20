@@ -12,10 +12,9 @@
     <author>Joel Omega</author>
     <content src="index.html" />
     <allow-intent href="mailto:*" />
-    <access origin="*" />
-    <allow-navigation href="https://*/*" />
+    <access origin="https://zafrimo-api.onrender.com" />
+    <allow-navigation href="https://zafrimo-api.onrender.com/*" />
     <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-        <application android:usesCleartextTraffic="true" />
     </edit-config>
     <config-file parent="/manifest" target="AndroidManifest.xml">
         <uses-permission android:name="android.permission.RECORD_AUDIO" />

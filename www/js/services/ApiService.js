@@ -15,10 +15,11 @@ export class ApiError extends Error {
 }
 
 class ApiService {
-  async request(method, path, body) {
+  // options.timeout : délai en ms (envoi de photos = plus long que le délai par défaut)
+  async request(method, path, body, { timeout = TIMEOUT_MS } = {}) {
     const token = Storage.get('token');
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), timeout);
     const isForm = typeof FormData !== 'undefined' && body instanceof FormData;
 
     let res;
@@ -58,8 +59,9 @@ class ApiService {
   }
 
   get(path) { return this.request('GET', path); }
-  post(path, body) { return this.request('POST', path, body); }
-  put(path, body) { return this.request('PUT', path, body); }
+  post(path, body, options) { return this.request('POST', path, body, options); }
+  put(path, body, options) { return this.request('PUT', path, body, options); }
+  patch(path, body, options) { return this.request('PATCH', path, body, options); }
   patch(path, body) { return this.request('PATCH', path, body); }
   delete(path) { return this.request('DELETE', path); }
 }

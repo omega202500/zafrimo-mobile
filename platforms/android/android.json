@@ -5,26 +5,18 @@
   },
   "config_munge": {
     "files": {
-      "res/xml/config.xml": {
-        "parents": {
-          "/*": [
-            {
-              "xml": "<feature name=\"StatusBar\"><param name=\"android-package\" value=\"org.apache.cordova.statusbar.StatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
-              "count": 1
-            },
-            {
-              "xml": "<preference name=\"StatusBarOverlaysWebView\" value=\"true\" />",
-              "count": 1
-            },
-            {
-              "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
-              "count": 1
-            }
-          ]
-        }
-      },
       "AndroidManifest.xml": {
         "parents": {
+          "/manifest": [
+            {
+              "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
+              "count": 3
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\" />",
+              "count": 3
+            }
+          ],
           "application": [
             {
               "xml": "<provider android:authorities=\"${applicationId}.cordova.plugin.camera.provider\" android:exported=\"false\" android:grantUriPermissions=\"true\" android:name=\"org.apache.cordova.camera.FileProvider\"><meta-data android:name=\"android.support.FILE_PROVIDER_PATHS\" android:resource=\"@xml/camera_provider_paths\" /></provider>",
@@ -48,33 +40,23 @@
               "xml": "<intent><action android:name=\"com.android.camera.action.CROP\" /><data android:mimeType=\"image/*\" android:scheme=\"content\" /></intent>",
               "count": 1
             }
-          ],
-          "/manifest": [
-            {
-              "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
-              "count": 1
-            },
-            {
-              "xml": "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\" />",
-              "count": 1
-            }
           ]
         }
       },
-      "app/src/main/AndroidManifest.xml": {
+      "res/xml/config.xml": {
         "parents": {
-          "/manifest/application": [
+          "/*": [
             {
-              "xml": "<application android:usesCleartextTraffic=\"true\" />",
-              "count": 1,
-              "mode": "merge",
-              "id": "config.xml",
-              "oldAttrib": {
-                "android:hardwareAccelerated": "true",
-                "android:icon": "@mipmap/ic_launcher",
-                "android:label": "@string/app_name",
-                "android:supportsRtl": "true"
-              }
+              "xml": "<feature name=\"StatusBar\"><param name=\"android-package\" value=\"org.apache.cordova.statusbar.StatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<preference name=\"StatusBarOverlaysWebView\" value=\"true\" />",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
+              "count": 1
             }
           ]
         }

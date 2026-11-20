@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 // 1) Production : l'URL de ton backend sur Render (toujours en https), terminée par /api
-const PROD_API_URL = 'https://zafrimo-api.onrender.com';
+const PROD_API_URL = 'https://zafrimo-api.onrender.com/api'; // ← AJOUT DE "/api" ICI
 
 // 2) Mets true pour construire l'APK de production
 const USE_PROD = true;
@@ -22,5 +22,6 @@ function devApiUrl() {
 }
 
 export const API_URL = USE_PROD ? PROD_API_URL : devApiUrl();
+
 // Racine du serveur (sans /api) : sert à construire les URLs des images (/storage/...)
 export const ASSET_URL = API_URL.replace(/\/api\/?$/, '');
